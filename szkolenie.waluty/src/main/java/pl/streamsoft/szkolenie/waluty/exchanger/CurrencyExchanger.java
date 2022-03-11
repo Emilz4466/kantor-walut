@@ -7,6 +7,8 @@ import java.time.LocalDate;
 import pl.streamsoft.szkolenie.waluty.data.Currency;
 import pl.streamsoft.szkolenie.waluty.data.parser.ParserStrategy;
 import pl.streamsoft.szkolenie.waluty.data.sources.ApiConnection;
+import pl.streamsoft.szkolenie.waluty.data.sources.FileConnection;
+import pl.streamsoft.szkolenie.waluty.data.sources.ResponseStrategy;
 import pl.streamsoft.szkolenie.waluty.data.sources.url.Url;
 import pl.streamsoft.szkolenie.waluty.data.sources.url.UrlBuilder;
 
@@ -34,6 +36,15 @@ public class CurrencyExchanger {
 		return builder.buildUrl();
 	}
 	
+	private BigDecimal getCalculateRate(ResponseStrategy connection) {
+		BigDecimal rate = parser.getRate(connection);
+		BigDecimal divider = new BigDecimal(1);
+		
+		BigDecimal invertedRate = divider.divide(rate, MathContext.DECIMAL128);
+		
+		return invertedRate;
+	}
+	
 	
 	public BigDecimal exchange(Currency currency, LocalDate date, BigDecimal value, ParserStrategy parser) {
 		
@@ -43,12 +54,16 @@ public class CurrencyExchanger {
 		
 		ApiConnection connection = new ApiConnection(setUrl());
 		
-		BigDecimal rate = parser.getRate(connection);
-		BigDecimal divider = new BigDecimal(1);
+		return value.multiply(getCalculateRate(connection));
 		
-		BigDecimal invertedRate = divider.divide(rate, MathContext.DECIMAL128);
+	}
+	
+	public BigDecimal exchange(String path, BigDecimal value, ParserStrategy parser) {
 		
-		return value.multiply(invertedRate);
+		this.parser = parser;
 		
+		FileConnection connection = new FileConnection(path);
+		
+		return value.multiply(getCalculateRate(connection));
 	}
 }

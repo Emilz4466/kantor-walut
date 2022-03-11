@@ -15,8 +15,10 @@ public class Main {
 		
 		CurrencyExchanger exchanger = new CurrencyExchanger();
 		
-		BigDecimal newValue = exchanger.exchange(Currency.EUR, date1, value1, json);
+		BigDecimal newValue1 = exchanger.exchange(Currency.EUR, date1, value1, json);
+		BigDecimal newValue2 = exchanger.exchange("src/main/java/eur_09-03-2022_json", value1, json);
 		
-		System.out.println(newValue);
+		System.out.println(newValue1);
+		System.out.println(newValue2);
 	}
 }
