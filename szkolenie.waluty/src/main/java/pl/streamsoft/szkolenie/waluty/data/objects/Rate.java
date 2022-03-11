@@ -10,7 +10,7 @@ public class Rate {
 	@JacksonXmlElementWrapper(localName = "No")
 	private String no = null;
 	@JacksonXmlElementWrapper(localName = "EffectiveDate")
-	private LocalDate effectiveDate = null;
+	private LocalDate effectiveDate;
 	@JacksonXmlElementWrapper(localName = "Mid")
 	private BigDecimal mid = null;
 	
@@ -23,5 +23,16 @@ public class Rate {
 	public BigDecimal getMid() {
 		return mid;
 	}
+	public void setNo(String no) {
+		this.no = no;
+	}
+	public void setEffectiveDate(String effectiveDate) {
+		this.effectiveDate = LocalDate.parse(effectiveDate);
+	}
+	public void setMid(BigDecimal mid) {
+		this.mid = mid;
+	}
+	
+
 	
 }

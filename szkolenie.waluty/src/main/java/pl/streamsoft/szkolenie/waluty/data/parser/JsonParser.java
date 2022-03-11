@@ -26,6 +26,11 @@ public class JsonParser implements ParserStrategy{
 	}
 	
 	@Override
+	public String getFormat() {
+		return "json";
+	}
+	
+	@Override
 	public BigDecimal getRate(ResponseStrategy response) {
 		this.response = response;
 		getObjectFromApi();

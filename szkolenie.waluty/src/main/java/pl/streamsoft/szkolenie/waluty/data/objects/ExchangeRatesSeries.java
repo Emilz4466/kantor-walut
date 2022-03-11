@@ -21,7 +21,11 @@ public class ExchangeRatesSeries {
 	@JacksonXmlElementWrapper(localName = "No")
 	private String no = null;
 	@JacksonXmlElementWrapper(localName = "Rates")
-	private List<Rate> rates = null;
+	private List<Rate> rates;
+	
+	public void setRates(List<Rate> rates) {
+		this.rates = rates;
+	}
 	public char getTable() {
 		return table;
 	}

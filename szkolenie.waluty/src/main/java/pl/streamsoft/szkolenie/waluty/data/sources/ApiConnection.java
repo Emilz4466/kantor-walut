@@ -10,14 +10,14 @@ import java.time.LocalDate;
 import pl.streamsoft.szkolenie.waluty.data.sources.url.Url;
 import pl.streamsoft.szkolenie.waluty.data.sources.url.UrlBuilder;
 
-public class ApiConnection {
+public class ApiConnection implements ResponseStrategy{
 	
 	private Url url;
-	private UrlBuilder urlBuilder;
+	private UrlBuilder urlBuilder = new UrlBuilder();
 	
 	
 	
-	ApiConnection(Url url) {
+	public ApiConnection(Url url) {
 		this.url = url;
 		dateValidator();
 	}
@@ -78,6 +78,7 @@ public class ApiConnection {
 		return response;
 	}
 	
+	@Override
 	public String getResponse() {
 		try {
 			return response().toString();
