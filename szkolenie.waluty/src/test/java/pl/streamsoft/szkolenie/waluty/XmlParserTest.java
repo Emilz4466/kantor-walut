@@ -29,6 +29,7 @@ public class XmlParserTest {
 	@Test
 	public void shouldParseDataFromApiBeforeMay2004() {
 		
+		//given
 		UrlBuilder urlBuilder = new UrlBuilder();
 		urlBuilder.setCurrency(currency.getCode());
 		urlBuilder.setDate(LocalDate.of(2003, 3, 9));
@@ -38,9 +39,12 @@ public class XmlParserTest {
 		response = new ApiConnection(url);
 		
 		BigDecimal rateFromGivenDate =  new BigDecimal(4.2977).round(context);
-				
-		Assert.assertEquals( rateFromGivenDate,  parser.getRate(response));
 		
+		//when
+		BigDecimal parseRate =  parser.getRate(response);
+			
+		//then
+		Assert.assertEquals( rateFromGivenDate, parseRate);
 		
 	}
 	
@@ -48,6 +52,7 @@ public class XmlParserTest {
 	@Test
 	public void shouldParseDataFromApiAfterMay2004() {
 		
+		//given
 		UrlBuilder urlBuilder = new UrlBuilder();
 		urlBuilder.setCurrency(currency.getCode());
 		urlBuilder.setDate(LocalDate.of(2022, 3, 9));
@@ -57,22 +62,30 @@ public class XmlParserTest {
 		response = new ApiConnection(url);
 		
 		BigDecimal rateFromGivenDate =  new BigDecimal(4.8429).round(context);
+		
+		//when
+		BigDecimal parseRate =  parser.getRate(response);
 				
-		Assert.assertEquals( rateFromGivenDate,  parser.getRate(response));
-		
-		
+		//then
+		Assert.assertEquals( rateFromGivenDate,  parseRate);
+			
 	}
 	
 	@Test
 	public void shouldParseDataFromFile() {
 		
+		//given
 		String path = "src/test/java/xml_test";
 		
 		response = new FileConnection(path);
 		
 		BigDecimal rateFromGivenDate =  new BigDecimal(4.8429).round(context);
+		
+		//when
+		BigDecimal parseRate =  parser.getRate(response);
 
-		Assert.assertEquals( rateFromGivenDate,  parser.getRate(response));
+		//then
+		Assert.assertEquals( rateFromGivenDate,  parseRate);
 
 	}
 }

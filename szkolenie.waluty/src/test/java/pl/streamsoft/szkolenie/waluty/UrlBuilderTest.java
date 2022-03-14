@@ -35,14 +35,15 @@ public class UrlBuilderTest {
 	@Test
 	public void shouldReturnCorrectUrl() {
 		
-		url = builder.buildUrl();
-		
+		//given
 		String correctUrl = "https://api.nbp.pl/api/exchangerates/rates/a/eur/2022-03-09/?format=json";
+
+		//when
+		url = builder.buildUrl();
+		String urlText = url.getUrl();
 		
-		String s = url.getUrl();
-		System.out.println(s);
-		
-		Assert.assertEquals(correctUrl, url.getUrl());
+		//then
+		Assert.assertEquals(correctUrl, urlText);
 	}
 
 }

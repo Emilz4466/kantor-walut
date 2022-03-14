@@ -29,33 +29,51 @@ public class CurrencyExchangerTest {
 	
 	@Test
 	public void shouldExchangeValueFromApiJsonRate() {
+		
+		//when
+		BigDecimal exchangeValue = exchanger.exchange(Currency.EUR, date, value, jsonParser).round(context);
 	
-		Assert.assertEquals( expectedValue,  exchanger.exchange(Currency.EUR, date, value, jsonParser).round(context));
+		//then
+		Assert.assertEquals( expectedValue,  exchangeValue);
 		
 	}
 	
 	@Test
 	public void shouldExchangeValueFromApiXmlRate() {
-	
-		Assert.assertEquals( expectedValue,  exchanger.exchange(Currency.EUR, date, value, xmlParser).round(context));
+		
+		//when
+		BigDecimal exchangeValue = exchanger.exchange(Currency.EUR, date, value, xmlParser).round(context);
+		
+		//then
+		Assert.assertEquals( expectedValue,  exchangeValue);
 		
 	}
 	
 	@Test
 	public void shouldExchangeValueFromFileJsonRate() {
 		
+		//given
 		String path = "src/test/java/json_test";
 	
-		Assert.assertEquals( expectedValue,  exchanger.exchange(path, value, jsonParser).round(context));
+		//when
+		BigDecimal exchangeValue = exchanger.exchange(path, value, jsonParser).round(context);
+				
+		//then
+		Assert.assertEquals( expectedValue,  exchangeValue);
 		
 	}
 	
 	@Test
 	public void shouldExchangeValueFromFileXmlRate() {
 		
+		//given
 		String path = "src/test/java/xml_test";
+		
+		//when
+		BigDecimal exchangeValue = exchanger.exchange(path, value, xmlParser).round(context);
 	
-		Assert.assertEquals( expectedValue,  exchanger.exchange(path, value, xmlParser).round(context));
+		//then
+		Assert.assertEquals( expectedValue,  exchangeValue);
 		
 	}
 	

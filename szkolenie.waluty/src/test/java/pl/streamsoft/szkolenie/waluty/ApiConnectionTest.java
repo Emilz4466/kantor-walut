@@ -26,11 +26,14 @@ public class ApiConnectionTest {
 	@Test
 	public void shouldReturnStringResponse() {
 		
+		// given
 		Url url = urlBuilder.buildUrl();
 		ApiConnection apiConnection = new ApiConnection(url);
 		
+		// when
 		String response = apiConnection.getResponse();
 		
+		//then
 		Assert.assertNotNull(response);
 		
 	}
@@ -38,39 +41,44 @@ public class ApiConnectionTest {
 	@Test
 	public void shouldChangeDateBeforeLastCurrencyDateGiven() {
 		
+		// given
 		urlBuilder.setDate(LocalDate.of(2000, 01, 01));
 		Url url = urlBuilder.buildUrl();
-		
 		ApiConnection apiConnection = new ApiConnection(url);
 		
+		// when
 		String response = apiConnection.getResponse();
 		
+		//then
 		Assert.assertNotNull(response);
 	}
 	
 	@Test
 	public void shouldChangeDateWithFutureDateGiven() {
 		
+		// given
 		urlBuilder.setDate(LocalDate.of(2023, 01, 01));
 		Url url = urlBuilder.buildUrl();
-		
 		ApiConnection apiConnection = new ApiConnection(url);
 		
+		// when
 		String response = apiConnection.getResponse();
 		
+		//then
 		Assert.assertNotNull(response);
 	}
 	
 	@Test
 	public void shouldChangeDateWhenDataNotAvailable() {
-		
+		// given
 		urlBuilder.setDate(LocalDate.of(2022, 03, 06)); 		//Niedziela
 		Url url = urlBuilder.buildUrl();
-		
 		ApiConnection apiConnection = new ApiConnection(url);
 		
+		// given
 		String response = apiConnection.getResponse();
 		
+		//then
 		Assert.assertNotNull(response);
 	}
 
