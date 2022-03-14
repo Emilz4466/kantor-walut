@@ -22,18 +22,20 @@ public class ApiConnection implements ResponseStrategy{
 		dateValidator();
 	}
 	
-	private Boolean isDataAvailable() {
+	private Boolean isDataAvailable() throws IOException {
 		
-		try {
-			URL urlConnector = new URL(url.getUrl());
-			HttpURLConnection connection;
-			connection = (HttpURLConnection) urlConnector.openConnection();
-			connection.setRequestMethod("GET");
-			return true;
+		URL urlConnector;
+		HttpURLConnection connection;
 		
-		} catch (IOException e) {
+		urlConnector = new URL(url.getUrl());
+		connection = (HttpURLConnection) urlConnector.openConnection();
+		connection.setRequestMethod("GET");
+		
+		if(connection.getResponseCode() >= 400) {
 			return false;
 		}
+		else return true;
+	
 		
 	}
 	
@@ -44,18 +46,23 @@ public class ApiConnection implements ResponseStrategy{
 		if(givenDate.isBefore(lastCurrency)) {
 			givenDate = lastCurrency;
 		}
-		else if(givenDate.isBefore(LocalDate.now())) {
+		else if(givenDate.isAfter(LocalDate.now())) {
 			givenDate = LocalDate.now();
 		}
 		
 		urlBuilder.setDate(givenDate);
 		urlBuilder.setCurrency(url.getCurrency());
 		urlBuilder.setFormat(url.getFormat());
+		url = urlBuilder.buildUrl();
 		
-		while(!isDataAvailable()) {
-			givenDate = givenDate.minusDays(1);
-			urlBuilder.setDate(givenDate);
-			url = urlBuilder.buildUrl();
+		try {
+			while(!isDataAvailable()) {
+				givenDate = givenDate.minusDays(1);
+				urlBuilder.setDate(givenDate);
+				url = urlBuilder.buildUrl();
+			}
+		} catch (IOException e) {
+			url = null;
 		}
 	}
 	

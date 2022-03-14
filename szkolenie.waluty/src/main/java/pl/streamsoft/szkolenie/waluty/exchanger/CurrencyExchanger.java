@@ -14,7 +14,7 @@ import pl.streamsoft.szkolenie.waluty.data.sources.url.UrlBuilder;
 
 public class CurrencyExchanger {
 	
-	private Currency currency;
+	private String currency;
 	private LocalDate date;
 	
 	private ParserStrategy parser;
@@ -48,7 +48,7 @@ public class CurrencyExchanger {
 	
 	public BigDecimal exchange(Currency currency, LocalDate date, BigDecimal value, ParserStrategy parser) {
 		
-		this.currency = currency;
+		this.currency = currency.getCode();
 		this.date = date;
 		this.parser = parser;
 		
