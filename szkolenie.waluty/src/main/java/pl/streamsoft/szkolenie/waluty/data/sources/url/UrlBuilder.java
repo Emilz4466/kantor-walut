@@ -2,17 +2,18 @@ package pl.streamsoft.szkolenie.waluty.data.sources.url;
 
 import java.time.LocalDate;
 
+import pl.streamsoft.szkolenie.waluty.data.Currency;
 
 public class UrlBuilder {
 
-	private String currency;
+	private Currency currency;
 	private LocalDate date;
 	private String format;
 	
-	public String getCurrency() {
+	public Currency getCurrency() {
 		return currency;
 	}
-	public void setCurrency(String currency) {
+	public void setCurrency(Currency currency) {
 		this.currency = currency;
 	}
 	public LocalDate getDate() {

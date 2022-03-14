@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.Assert;
 import org.junit.Before;
 
+import pl.streamsoft.szkolenie.waluty.data.Currency;
 import pl.streamsoft.szkolenie.waluty.data.sources.ApiConnection;
 import pl.streamsoft.szkolenie.waluty.data.sources.url.Url;
 import pl.streamsoft.szkolenie.waluty.data.sources.url.UrlBuilder;
@@ -17,7 +18,7 @@ public class ApiConnectionTest {
 	
 	@Before
 	public void init() {
-		urlBuilder.setCurrency("eur");
+		urlBuilder.setCurrency(Currency.EUR);
 		urlBuilder.setDate(LocalDate.of(2022, 3, 9));
 		urlBuilder.setFormat("json");
 		

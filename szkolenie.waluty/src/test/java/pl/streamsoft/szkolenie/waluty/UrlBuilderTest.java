@@ -21,7 +21,7 @@ public class UrlBuilderTest {
 	
 	@Before
 	public void init() {
-		builder.setCurrency(currency.getCode());
+		builder.setCurrency(currency);
 		builder.setDate(LocalDate.of(2022, 3, 9));
 		builder.setFormat("json");
 	}

@@ -31,7 +31,7 @@ public class XmlParserTest {
 		
 		//given
 		UrlBuilder urlBuilder = new UrlBuilder();
-		urlBuilder.setCurrency(currency.getCode());
+		urlBuilder.setCurrency(currency);
 		urlBuilder.setDate(LocalDate.of(2003, 3, 9));
 		urlBuilder.setFormat("xml");
 		Url url = urlBuilder.buildUrl();
@@ -54,7 +54,7 @@ public class XmlParserTest {
 		
 		//given
 		UrlBuilder urlBuilder = new UrlBuilder();
-		urlBuilder.setCurrency(currency.getCode());
+		urlBuilder.setCurrency(currency);
 		urlBuilder.setDate(LocalDate.of(2022, 3, 9));
 		urlBuilder.setFormat("xml");
 		Url url = urlBuilder.buildUrl();
