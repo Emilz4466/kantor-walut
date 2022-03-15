@@ -1,5 +1,7 @@
 package pl.streamsoft.szkolenie.waluty;
 
+import static org.junit.Assert.fail;
+
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -10,71 +12,46 @@ import org.junit.Test;
 
 import pl.streamsoft.szkolenie.waluty.data.Currency;
 import pl.streamsoft.szkolenie.waluty.data.parser.JsonParser;
-import pl.streamsoft.szkolenie.waluty.data.parser.XmlParser;
+import pl.streamsoft.szkolenie.waluty.data.parser.ParserStrategy;
+import pl.streamsoft.szkolenie.waluty.data.sources.ApiConnection;
+import pl.streamsoft.szkolenie.waluty.data.sources.ResponseStrategy;
 import pl.streamsoft.szkolenie.waluty.exchanger.CurrencyExchanger;
 
 public class CurrencyExchangerTest {
-	
+
 	MathContext context = new MathContext(5, RoundingMode.HALF_UP);
-	JsonParser jsonParser = new JsonParser();
-	XmlParser xmlParser = new XmlParser();
-	
-	BigDecimal value = new BigDecimal(147.23);
-	LocalDate date = LocalDate.of(2022, 03, 9);
-	BigDecimal expectedValue =  new BigDecimal(30.401).round(context);
-	
 	CurrencyExchanger exchanger = new CurrencyExchanger();
-	
-	
-	
+
 	@Test
-	public void shouldExchangeValueFromApiJsonRate() {
-		
-		//when
-		BigDecimal exchangeValue = exchanger.exchange(Currency.EUR, date, value, jsonParser).round(context);
-	
-		//then
-		Assert.assertEquals( expectedValue,  exchangeValue);
-		
+	public void shouldReturnCorrectExchangeValue() {
+		// given
+		LocalDate date = LocalDate.of(2022, 03, 9);
+		BigDecimal givenValue = new BigDecimal(147.23);
+		BigDecimal expectedExchangedValue = new BigDecimal(30.401).round(context);
+		ResponseStrategy connection = new ApiConnection(Currency.EUR, date);
+		ParserStrategy parser = new JsonParser();
+
+		// when
+		BigDecimal recievedExchangedValue = exchanger.exchange(connection, givenValue, parser).round(context);
+
+		// then
+		Assert.assertEquals(expectedExchangedValue, recievedExchangedValue);
+
 	}
-	
+
 	@Test
-	public void shouldExchangeValueFromApiXmlRate() {
-		
-		//when
-		BigDecimal exchangeValue = exchanger.exchange(Currency.EUR, date, value, xmlParser).round(context);
-		
-		//then
-		Assert.assertEquals( expectedValue,  exchangeValue);
-		
+	public void shouldThrowNoDataExceptionWhenResponseIsNull() {
+		// given
+		ResponseStrategy response = new ApiConnection(Currency.EUR, LocalDate.of(2022, 03, 9));
+		BigDecimal value = new BigDecimal(122);
+		ParserStrategy parser = new JsonParser();
+
+		// when
+		BigDecimal recievedValue = exchanger.exchange(response, value, parser);
+
+		// then
+		Assert.assertEquals(null, recievedValue);
+		fail("NoDataException was thrown");
+
 	}
-	
-	@Test
-	public void shouldExchangeValueFromFileJsonRate() {
-		
-		//given
-		String path = "src/test/java/json_test";
-	
-		//when
-		BigDecimal exchangeValue = exchanger.exchange(path, value, jsonParser).round(context);
-				
-		//then
-		Assert.assertEquals( expectedValue,  exchangeValue);
-		
-	}
-	
-	@Test
-	public void shouldExchangeValueFromFileXmlRate() {
-		
-		//given
-		String path = "src/test/java/xml_test";
-		
-		//when
-		BigDecimal exchangeValue = exchanger.exchange(path, value, xmlParser).round(context);
-	
-		//then
-		Assert.assertEquals( expectedValue,  exchangeValue);
-		
-	}
-	
 }

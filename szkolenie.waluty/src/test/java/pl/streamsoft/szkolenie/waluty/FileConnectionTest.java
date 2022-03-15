@@ -1,6 +1,5 @@
 package pl.streamsoft.szkolenie.waluty;
 
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -10,16 +9,16 @@ public class FileConnectionTest {
 
 	@Test
 	public void shouldReturnStringResponse() {
-		
-		//given
-		FileConnection fileConnection = new FileConnection("src/main/java/eur_09-03-2022_json");
-		
-		//when
+
+		// given
+		FileConnection fileConnection = new FileConnection("src/test/java/test_file");
+
+		// when
 		String response = fileConnection.getResponse();
-		
-		//then
+
+		// then
 		Assert.assertNotNull(response);
-		
+
 	}
 
 }

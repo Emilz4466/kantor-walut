@@ -1,93 +1,45 @@
 package pl.streamsoft.szkolenie.waluty;
 
+import static org.junit.Assert.fail;
+
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
-import java.time.LocalDate;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import pl.streamsoft.szkolenie.waluty.data.Currency;
+import pl.streamsoft.szkolenie.waluty.data.exceptions.NoDataException;
 import pl.streamsoft.szkolenie.waluty.data.parser.JsonParser;
-import pl.streamsoft.szkolenie.waluty.data.sources.ApiConnection;
-import pl.streamsoft.szkolenie.waluty.data.sources.FileConnection;
-import pl.streamsoft.szkolenie.waluty.data.sources.ResponseStrategy;
-import pl.streamsoft.szkolenie.waluty.data.sources.url.Url;
-import pl.streamsoft.szkolenie.waluty.data.sources.url.UrlBuilder;
 
 public class JsonParserTest {
-	
-	ResponseStrategy response;
+
 	JsonParser parser = new JsonParser();
-	
+
 	MathContext context = new MathContext(5, RoundingMode.HALF_UP);
-	
-	Currency currency = Currency.EUR;
 
-	
-	
 	@Test
-	public void shouldParseDataFromApiBeforeMay2004() {
-		
-		//given
-		UrlBuilder urlBuilder = new UrlBuilder();
-		urlBuilder.setCurrency(currency);
-		urlBuilder.setDate(LocalDate.of(2003, 3, 9));
-		urlBuilder.setFormat("json");
-		Url url = urlBuilder.buildUrl();
-		
-		response = new ApiConnection(url);
-		
-		BigDecimal rateFromGivenDate =  new BigDecimal(4.2977).round(context);
-		
-		//when
-		BigDecimal parseRate =  parser.getRate(response);
-				
-		//then
-		Assert.assertEquals( rateFromGivenDate, parseRate);
-		
-		
+	public void shouldGetCorrectRateFromResponse() throws NoDataException {
+		// given
+		String givenResponse = "{\"table\":\"A\",\"currency\":\"euro\",\"code\":\"EUR\",\"rates\":[{\"no\":\"047/A/NBP/2022\",\"effectiveDate\":\"2022-03-09\",\"mid\":4.8429}]}";
+		BigDecimal expectedRate = new BigDecimal(4.8429).round(context);
+
+		// when
+		BigDecimal recievedRate = parser.getRate(givenResponse);
+
+		// then
+		Assert.assertEquals(expectedRate, recievedRate);
 	}
-	
-	
+
 	@Test
-	public void shouldParseDataFromApiAfterMay2004() {
-		
-		//given
-		UrlBuilder urlBuilder = new UrlBuilder();
-		urlBuilder.setCurrency(currency);
-		urlBuilder.setDate(LocalDate.of(2022, 3, 9));
-		urlBuilder.setFormat("json");
-		Url url = urlBuilder.buildUrl();
-		
-		response = new ApiConnection(url);
-		
-		BigDecimal rateFromGivenDate =  new BigDecimal(4.8429).round(context);
-		
-		//when
-		BigDecimal parseRate =  parser.getRate(response);
-				
-		Assert.assertEquals( rateFromGivenDate,  parseRate);
-		
-		
-	}
-	
-	@Test
-	public void shouldParseDataFromFile() {
-		
-		//given
-		String path = "src/test/java/json_test";
-		
-		response = new FileConnection(path);
-		
-		BigDecimal rateFromGivenDate =  new BigDecimal(4.8429).round(context);
+	public void shouldThrowNoDataExcepptionWhenResponseIsNull() throws NoDataException {
+		String givenResponse = null;
 
-		//when
-		BigDecimal parseRate =  parser.getRate(response);
+		// when
+		BigDecimal recievedRate = parser.getRate(givenResponse);
 
-		//then
-		Assert.assertEquals( rateFromGivenDate, parseRate);
-
+		// then
+		Assert.assertEquals(null, recievedRate);
+		fail("");
 	}
 }
