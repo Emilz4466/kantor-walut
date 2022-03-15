@@ -7,73 +7,97 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDate;
 
+import pl.streamsoft.szkolenie.waluty.data.Currency;
+import pl.streamsoft.szkolenie.waluty.data.exceptions.NoDataException;
+import pl.streamsoft.szkolenie.waluty.data.sources.url.DateValidator;
 import pl.streamsoft.szkolenie.waluty.data.sources.url.Url;
 import pl.streamsoft.szkolenie.waluty.data.sources.url.UrlBuilder;
 
-public class ApiConnection implements ResponseStrategy{
-	
+public class ApiConnection implements ResponseStrategy {
+
 	private Url url;
-	private UrlBuilder urlBuilder = new UrlBuilder();
-	
-	
-	
-	public ApiConnection(Url url) {
-		this.url = url;
-		dateValidator();
+	UrlBuilder builder = new UrlBuilder();
+
+	private Currency currency;
+	private LocalDate date;
+	private String format;
+
+	public ApiConnection() {
 	}
-	
-	private Boolean isDataAvailable() throws IOException {
-		
-		URL urlConnector;
-		HttpURLConnection connection;
-		
-		urlConnector = new URL(url.getUrl());
-		connection = (HttpURLConnection) urlConnector.openConnection();
-		connection.setRequestMethod("GET");
-		
-		if(connection.getResponseCode() >= 400) {
-			return false;
-		}
-		else return true;
-	
-		
+
+	public ApiConnection(Currency currency, LocalDate date) {
+
+		this.currency = currency;
+		this.date = date;
+
 	}
-	
-	private void dateValidator() {
-		LocalDate givenDate = url.getDate();
-		LocalDate lastCurrency = LocalDate.of(2002, 01, 02);
-		
-		if(givenDate.isBefore(lastCurrency)) {
-			givenDate = lastCurrency;
-		}
-		else if(givenDate.isAfter(LocalDate.now())) {
-			givenDate = LocalDate.now();
-		}
-		
-		urlBuilder.setDate(givenDate);
-		urlBuilder.setCurrency(url.getCurrency());
-		urlBuilder.setFormat(url.getFormat());
-		url = urlBuilder.buildUrl();
-		
-		try {
-			while(!isDataAvailable()) {
+
+	public Currency getCurrency() {
+		return currency;
+	}
+
+	public LocalDate getDate() {
+		return date;
+	}
+
+	public String getFormat() {
+		return format;
+	}
+
+	public void setCurrency(Currency currency) {
+		this.currency = currency;
+	}
+
+	public void setDate(LocalDate date) {
+		this.date = date;
+	}
+
+	@Override
+	public void setFormat(String format) {
+		this.format = format;
+	}
+
+	private Url setUrl() {
+
+		DateValidator dateValidator = new DateValidator(date);
+
+		builder.setCurrency(currency);
+		builder.setDate(dateValidator.dateValidation());
+		builder.setFormat(format);
+
+		return builder.buildUrl();
+	}
+
+	private HttpURLConnection dataValidator(HttpURLConnection connection) throws IOException {
+		LocalDate givenDate = date;
+		HttpURLConnection newConnection = connection;
+
+		for (int i = 0; i <= 20; i++) {
+			if (newConnection.getResponseCode() >= 400) {
 				givenDate = givenDate.minusDays(1);
-				urlBuilder.setDate(givenDate);
-				url = urlBuilder.buildUrl();
+				builder.setDate(givenDate);
+				url = builder.buildUrl();
+				URL urlConnector = new URL(url.getUrl());
+				newConnection = (HttpURLConnection) urlConnector.openConnection();
+				newConnection.setRequestMethod("GET");
+
+			} else {
+				break;
 			}
-		} catch (IOException e) {
-			url = null;
+
 		}
+
+		return newConnection;
 	}
-	
+
 	private StringBuffer response() throws IOException {
-		
-		URL urlConnector = new URL(url.getUrl());
+
+		URL urlConnector = new URL(setUrl().getUrl());
 		HttpURLConnection connection;
 		connection = (HttpURLConnection) urlConnector.openConnection();
 		connection.setRequestMethod("GET");
-		
-		BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+		BufferedReader in = new BufferedReader(new InputStreamReader(dataValidator(connection).getInputStream()));
 		String inputLine;
 		StringBuffer response = new StringBuffer();
 
@@ -81,16 +105,16 @@ public class ApiConnection implements ResponseStrategy{
 			response.append(inputLine);
 		}
 		in.close();
-		
+
 		return response;
 	}
-	
+
 	@Override
-	public String getResponse() {
+	public String getResponse() throws NoDataException {
 		try {
 			return response().toString();
 		} catch (IOException e) {
-			return null;
+			throw new NoDataException("Brak danych pod wskazaną datą!", e);
 		}
 	}
 }
