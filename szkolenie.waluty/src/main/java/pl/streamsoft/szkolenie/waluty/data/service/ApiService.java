@@ -1,4 +1,4 @@
-package pl.streamsoft.szkolenie.waluty.data.sources;
+package pl.streamsoft.szkolenie.waluty.data.service;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,11 +9,11 @@ import java.time.LocalDate;
 
 import pl.streamsoft.szkolenie.waluty.data.Currency;
 import pl.streamsoft.szkolenie.waluty.data.exceptions.NoDataException;
-import pl.streamsoft.szkolenie.waluty.data.sources.url.DateValidator;
-import pl.streamsoft.szkolenie.waluty.data.sources.url.Url;
-import pl.streamsoft.szkolenie.waluty.data.sources.url.UrlBuilder;
+import pl.streamsoft.szkolenie.waluty.data.sources.api.url.DateValidator;
+import pl.streamsoft.szkolenie.waluty.data.sources.api.url.Url;
+import pl.streamsoft.szkolenie.waluty.data.sources.api.url.UrlBuilder;
 
-public class ApiConnection implements ResponseStrategy {
+public class ApiService implements ServiceStrategy {
 
 	private Url url;
 	UrlBuilder builder = new UrlBuilder();
@@ -22,39 +22,15 @@ public class ApiConnection implements ResponseStrategy {
 	private LocalDate date;
 	private String format;
 
-	public ApiConnection() {
+	public ApiService() {
 	}
 
-	public ApiConnection(Currency currency, LocalDate date) {
+	public ApiService(Currency currency, LocalDate date, String format) {
 
 		this.currency = currency;
 		this.date = date;
-
-	}
-
-	public Currency getCurrency() {
-		return currency;
-	}
-
-	public LocalDate getDate() {
-		return date;
-	}
-
-	public String getFormat() {
-		return format;
-	}
-
-	public void setCurrency(Currency currency) {
-		this.currency = currency;
-	}
-
-	public void setDate(LocalDate date) {
-		this.date = date;
-	}
-
-	@Override
-	public void setFormat(String format) {
 		this.format = format;
+
 	}
 
 	private Url setUrl() {
@@ -69,7 +45,7 @@ public class ApiConnection implements ResponseStrategy {
 	}
 
 	private HttpURLConnection dataValidator(HttpURLConnection connection) throws IOException {
-		LocalDate givenDate = date;
+		LocalDate givenDate = builder.getDate();
 		HttpURLConnection newConnection = connection;
 
 		for (int i = 0; i <= 20; i++) {

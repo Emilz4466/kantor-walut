@@ -3,7 +3,7 @@ package pl.streamsoft.szkolenie.waluty;
 import org.junit.Assert;
 import org.junit.Test;
 
-import pl.streamsoft.szkolenie.waluty.data.sources.FileConnection;
+import pl.streamsoft.szkolenie.waluty.data.service.FileConnection;
 
 public class FileConnectionTest {
 

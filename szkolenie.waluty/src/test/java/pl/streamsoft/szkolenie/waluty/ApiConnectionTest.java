@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import pl.streamsoft.szkolenie.waluty.data.Currency;
 import pl.streamsoft.szkolenie.waluty.data.exceptions.NoDataException;
-import pl.streamsoft.szkolenie.waluty.data.sources.ApiConnection;
+import pl.streamsoft.szkolenie.waluty.data.service.ApiConnection;
 import pl.streamsoft.szkolenie.waluty.data.sources.url.UrlBuilder;
 
 public class ApiConnectionTest {

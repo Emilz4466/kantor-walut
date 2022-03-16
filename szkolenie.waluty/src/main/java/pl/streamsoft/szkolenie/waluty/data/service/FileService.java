@@ -1,17 +1,19 @@
-package pl.streamsoft.szkolenie.waluty.data.sources;
+package pl.streamsoft.szkolenie.waluty.data.service;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class FileConnection implements ResponseStrategy {
+import pl.streamsoft.szkolenie.waluty.data.exceptions.NoDataException;
+
+public class FileService implements ServiceStrategy {
 
 	private String path;
 
-	public FileConnection() {
+	public FileService() {
 	}
 
-	public FileConnection(String path) {
+	public FileService(String path) {
 		this.path = path;
 	}
 
@@ -20,21 +22,17 @@ public class FileConnection implements ResponseStrategy {
 	}
 
 	@Override
-	public String getResponse() {
+	public String getResponse() throws NoDataException {
 
 		String response = "";
 
 		try {
 			response = new String(Files.readAllBytes(Paths.get(path)));
 		} catch (IOException e) {
-			response = null;
+			throw new NoDataException("Brak danych pod wskazaną datą!", e);
 		}
 
 		return response;
-	}
-
-	@Override
-	public void setFormat(String format) {
 	}
 
 }
