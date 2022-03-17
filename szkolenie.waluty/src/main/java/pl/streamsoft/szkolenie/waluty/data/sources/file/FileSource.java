@@ -13,8 +13,15 @@ public class FileSource implements SourceStrategy {
 
 	private String path;
 
-	public FileSource(String path) {
+	private Currency currency;
+	private LocalDate date;
+	private String format;
+
+	public FileSource(String path, Currency currency, LocalDate date) {
 		this.path = path;
+
+		this.currency = currency;
+		this.date = date;
 	}
 
 	public String getPath() {
@@ -27,38 +34,32 @@ public class FileSource implements SourceStrategy {
 
 	@Override
 	public Currency getCurrency() {
-		// TODO Auto-generated method stub
-		return null;
+		return currency;
 	}
 
 	@Override
 	public LocalDate getDate() {
-		// TODO Auto-generated method stub
-		return null;
+		return date;
 	}
 
 	@Override
 	public String getFormat() {
-		// TODO Auto-generated method stub
-		return null;
+		return format;
 	}
 
 	@Override
 	public void setCurrency(Currency currency) {
-		// TODO Auto-generated method stub
-
+		this.currency = currency;
 	}
 
 	@Override
 	public void setDate(LocalDate date) {
-		// TODO Auto-generated method stub
-
+		this.date = date;
 	}
 
 	@Override
 	public void setFormat(String format) {
-		// TODO Auto-generated method stub
-
+		this.format = format;
 	}
 
 	@Override

@@ -20,13 +20,13 @@ public class Main {
 	public static void main(String[] args) {
 
 		BigDecimal value1 = new BigDecimal(120);
-		LocalDate date1 = LocalDate.of(2023, 03, 13);
+		LocalDate date1 = LocalDate.of(2022, 03, 10);
 		LocalDate date2 = LocalDate.of(2001, 03, 13);
 		ParserStrategy json = new JsonParser();
 		ParserStrategy xml = new XmlParser();
 
 		ApiSource apiSource = new ApiSource(Currency.EUR, date1);
-		FileSource fileSource = new FileSource("src/main/java/eur_09-03-2022_json");
+		FileSource fileSource = new FileSource("src/main/java/eur_09-03-2022_json", Currency.EUR, date1);
 		CacheSource cacheSource = new CacheSource(Currency.EUR, date1);
 
 		List<ConnectionMethod> connections = new ArrayList<>();

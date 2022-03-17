@@ -59,7 +59,6 @@ public class ApiSource implements SourceStrategy {
 
 	@Override
 	public BigDecimal getRate() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

@@ -1,11 +1,11 @@
 package pl.streamsoft.szkolenie.waluty.data.parser;
 
-import java.math.BigDecimal;
-
 import pl.streamsoft.szkolenie.waluty.data.exceptions.NoDataException;
+import pl.streamsoft.szkolenie.waluty.data.objects.RatesSeries;
+import pl.streamsoft.szkolenie.waluty.data.sources.SourceStrategy;
 
 public interface ParserStrategy {
 	String getFormat();
 
-	BigDecimal getRate(String response) throws NoDataException;
+	RatesSeries getCurrencyObject(SourceStrategy source) throws NoDataException;
 }

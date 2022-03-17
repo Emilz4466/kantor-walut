@@ -30,14 +30,12 @@ public class CacheSource implements SourceStrategy {
 
 	@Override
 	public Currency getCurrency() {
-		// TODO Auto-generated method stub
-		return null;
+		return currency;
 	}
 
 	@Override
 	public LocalDate getDate() {
-		// TODO Auto-generated method stub
-		return null;
+		return date;
 	}
 
 	@Override
@@ -48,14 +46,12 @@ public class CacheSource implements SourceStrategy {
 
 	@Override
 	public void setCurrency(Currency currency) {
-		// TODO Auto-generated method stub
-
+		this.currency = currency;
 	}
 
 	@Override
 	public void setDate(LocalDate date) {
-		// TODO Auto-generated method stub
-
+		this.date = date;
 	}
 
 	@Override

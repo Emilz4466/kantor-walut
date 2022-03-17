@@ -1,12 +1,15 @@
 package pl.streamsoft.szkolenie.waluty.exchanger;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
 import pl.streamsoft.szkolenie.waluty.data.ConnectionMethod;
+import pl.streamsoft.szkolenie.waluty.data.Currency;
 import pl.streamsoft.szkolenie.waluty.data.exceptions.NoDataException;
 import pl.streamsoft.szkolenie.waluty.data.parser.ParserStrategy;
+import pl.streamsoft.szkolenie.waluty.data.service.ObjectService;
 import pl.streamsoft.szkolenie.waluty.data.sources.SourceStrategy;
 import pl.streamsoft.szkolenie.waluty.data.sources.cache.CacheSource;
 
@@ -16,8 +19,6 @@ public class CacheWriter {
 
 	public CacheWriter(List<ConnectionMethod> connections) throws NoDataException {
 		this.connections = connections;
-		dataOrganization();
-		write();
 
 	}
 
@@ -28,6 +29,8 @@ public class CacheWriter {
 	}
 
 	private void write() throws NoDataException {
+		dataOrganization();
+		CacheSource cacheSource = new CacheSource();
 		for (int i = 0; i < connections.size(); i++) {
 			if (connections.get(i).getSource() instanceof CacheSource) {
 
@@ -35,13 +38,25 @@ public class CacheWriter {
 				SourceStrategy previousSource = previousMethod.getSource();
 				ParserStrategy previousParser = previousMethod.getParser();
 
-				CacheSource cacheSource = new CacheSource();
+				ObjectService objectService = new ObjectService(previousSource,
+						previousParser.getCurrencyObject(previousSource));
 
-				BigDecimal nextRate = previousParser.getRate(previousSource.getResponse());
+				BigDecimal cacheRate = objectService.getRate();
+				LocalDate cacheDate = objectService.getDate();
+				Currency code = objectService.getCurrency();
 
-				cacheSource.putNewData(previousSource.getCurrency(), previousSource.getDate(), nextRate);
+				cacheSource.setCurrency(connections.get(i).getSource().getCurrency());
+				cacheSource.setDate(connections.get(i).getSource().getDate());
+				cacheSource.putNewData(code, cacheDate, cacheRate);
+
+				this.connections.get(i).setSource(cacheSource);
 
 			}
 		}
+	}
+
+	public List<ConnectionMethod> getConnectionsWithCache() throws NoDataException {
+		write();
+		return connections;
 	}
 }

@@ -1,28 +1,40 @@
 package pl.streamsoft.szkolenie.waluty.data.parser;
 
-import java.math.BigDecimal;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import pl.streamsoft.szkolenie.waluty.data.exceptions.NoDataException;
-import pl.streamsoft.szkolenie.waluty.data.objects.ExchangeRatesSeries;
+import pl.streamsoft.szkolenie.waluty.data.objects.RatesSeries;
+import pl.streamsoft.szkolenie.waluty.data.parser.deserializer.ArrayOfRatesSeriesJsonDeserializer;
+import pl.streamsoft.szkolenie.waluty.data.sources.SourceStrategy;
 
 public class JsonParser implements ParserStrategy {
 
 	private String response;
-	private ExchangeRatesSeries exchangeRatesSeries = new ExchangeRatesSeries();
+	private RatesSeries exchangeRatesSeries = new RatesSeries();
 
 	private void getObjectFromApi() throws NoDataException {
 
 		ObjectMapper mapper = new ObjectMapper();
+		SimpleModule module = new SimpleModule();
+
+		module.addDeserializer(RatesSeries.class, new ArrayOfRatesSeriesJsonDeserializer());
+
+		mapper.registerModule(module);
 
 		try {
-			this.exchangeRatesSeries = mapper.readValue(response, ExchangeRatesSeries.class);
+			this.exchangeRatesSeries = mapper.readValue(response, RatesSeries.class);
 		} catch (JsonProcessingException e) {
 			this.exchangeRatesSeries = null;
 		}
+	}
 
+	@Override
+	public RatesSeries getCurrencyObject(SourceStrategy source) throws NoDataException {
+		this.response = source.getResponse();
+		getObjectFromApi();
+		return exchangeRatesSeries;
 	}
 
 	@Override
@@ -30,10 +42,4 @@ public class JsonParser implements ParserStrategy {
 		return "json";
 	}
 
-	@Override
-	public BigDecimal getRate(String response) throws NoDataException {
-		this.response = response;
-		getObjectFromApi();
-		return exchangeRatesSeries.getRates().get(0).getMid();
-	}
 }
