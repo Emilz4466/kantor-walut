@@ -15,6 +15,10 @@ public class Url {
 		this.format = format;
 	}
 
+	public Url() {
+
+	}
+
 	public Currency getCurrency() {
 		return currency;
 	}
@@ -30,6 +34,12 @@ public class Url {
 	public String getUrl() {
 		return "https://api.nbp.pl/api/exchangerates/rates/a/" + this.currency.getCode() + "/" + this.date + "/?format="
 				+ this.format;
+	}
+
+	public String getUrlForDb(Currency code, LocalDate date1, LocalDate date2) {
+		return "https://api.nbp.pl/api/exchangerates/rates/a/" + code.getCode() + "/" + date1 + "/" + date2
+				+ "/?format=json";
+
 	}
 
 }

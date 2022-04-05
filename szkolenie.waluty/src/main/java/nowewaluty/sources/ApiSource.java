@@ -1,15 +1,19 @@
 package nowewaluty.sources;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 import nowewaluty.Currency;
 import nowewaluty.objects.RateData;
 import nowewaluty.objects.RatesSeries;
+import nowewaluty.objects.RatesSeries.Rate;
 import nowewaluty.sources.url.DateValidator;
 import nowewaluty.sources.url.Url;
 import nowewaluty.sources.url.UrlBuilder;
@@ -45,13 +49,24 @@ public class ApiSource implements SourceStrategy {
 		return builder.buildUrl();
 	}
 
-	private StringBuffer response() throws IOException {
-		URL urlConnector = new URL(setUrl().getUrl());
+	private StringBuffer response(int urlStrategy, Currency code, LocalDate date1, LocalDate date2) throws IOException {
+		URL urlConnector = null;
+		if (urlStrategy == 0) {
+			urlConnector = new URL(setUrl().getUrl());
+		} else if (urlStrategy == 1) {
+			Url urlForYearRates = new Url();
+			urlConnector = new URL(urlForYearRates.getUrlForDb(code, date1, date2));
+		}
 		HttpURLConnection connection;
-		connection = (HttpURLConnection) urlConnector.openConnection();
-		connection.setRequestMethod("GET");
+		BufferedReader in = null;
+		try {
+			connection = (HttpURLConnection) urlConnector.openConnection();
+			connection.setRequestMethod("GET");
 
-		BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+		} catch (FileNotFoundException e) {
+			return null;
+		}
 		String inputLine;
 		StringBuffer response = new StringBuffer();
 
@@ -65,7 +80,7 @@ public class ApiSource implements SourceStrategy {
 
 	public String getResponse() {
 		try {
-			return response().toString();
+			return response(0, null, null, null).toString();
 		} catch (IOException e) {
 			return null;
 		}
@@ -95,6 +110,18 @@ public class ApiSource implements SourceStrategy {
 			RateData rateData = new RateData(series, date, currency);
 			return rateData;
 		}
+	}
+
+	public RatesSeries getRates(ParserStrategy parser, Currency code, LocalDate date1, LocalDate date2)
+			throws Exception {
+		RatesSeries series = null;
+		if (response(1, code, date1, date2) == null) {
+			return null;
+		} else {
+			series = parser.getRatesSeries(response(1, code, date1, date2).toString());
+		}
+		return series;
+
 	}
 
 }

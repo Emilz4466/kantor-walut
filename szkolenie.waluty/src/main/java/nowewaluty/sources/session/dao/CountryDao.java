@@ -1,5 +1,7 @@
 package nowewaluty.sources.session.dao;
 
+import java.util.List;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -11,82 +13,75 @@ import nowewaluty.strategies.Dao;
 
 public class CountryDao implements Dao<Country> {
 
-	@Override
-	public Country get(long id) throws DaoSessionException {
+	SessionFactory sessionFactory;
 
+	public CountryDao(HibernateFactory factory) throws DaoSessionException {
 		try {
-			HibernateFactory factory = new HibernateFactory();
-			SessionFactory sessionFactory;
 			sessionFactory = factory.factory();
-			Session session = sessionFactory.openSession();
-			session.beginTransaction();
-			Query query = session.createQuery("FROM Country WHERE country_id = :id");
-			query.setParameter("id", id);
-			Country country = (Country) query.uniqueResult();
-			session.getTransaction().commit();
-			session.close();
-			return country;
 		} catch (Exception e) {
 			throw new DaoSessionException("Błąd w tworzeniu sesji połączenia z bazą danych", e);
 		}
+	}
+
+	@Override
+	public Country get(long id) {
+
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		Query query = session.createQuery("FROM Country WHERE country_id = :id");
+		query.setParameter("id", id);
+		Country country = (Country) query.uniqueResult();
+		session.getTransaction().commit();
+		session.close();
+		return country;
 
 	}
 
 	@Override
-	public Country get(String name) throws DaoSessionException {
-		try {
-			HibernateFactory factory = new HibernateFactory();
-			SessionFactory sessionFactory;
-			sessionFactory = factory.factory();
-			Session session = sessionFactory.openSession();
-			session.beginTransaction();
-			Query query = session.createQuery("FROM Country WHERE country_name = :name");
-			query.setParameter("name", name);
-			Country country = (Country) query.uniqueResult();
-			session.getTransaction().commit();
-			session.close();
-			return country;
-		} catch (Exception e) {
-			throw new DaoSessionException("Błąd w tworzeniu sesji połączenia z bazą danych", e);
-		}
+	public Country get(String name) {
+
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		Query query = session.createQuery("FROM Country WHERE country_name = :name");
+		query.setParameter("name", name);
+		Country country = (Country) query.uniqueResult();
+		session.getTransaction().commit();
+		session.close();
+		return country;
 
 	}
 
 	@Override
-	public void save(Country t) throws DaoSessionException {
+	public void save(Country t) {
 
-		try {
-			HibernateFactory factory = new HibernateFactory();
-			SessionFactory sessionFactory;
-			sessionFactory = factory.factory();
-			Session session = sessionFactory.openSession();
-			session.beginTransaction();
-			session.save(t);
-			session.getTransaction().commit();
-			session.close();
-		} catch (Exception e) {
-			throw new DaoSessionException("Błąd w tworzeniu sesji połączenia z bazą danych", e);
-		}
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		session.save(t);
+		session.getTransaction().commit();
+		session.close();
 
 	}
 
 	@Override
-	public void update(long id, Country t) throws DaoSessionException {
-		try {
-			HibernateFactory factory = new HibernateFactory();
-			SessionFactory sessionFactory;
-			sessionFactory = factory.factory();
-			Session session = sessionFactory.openSession();
-			session.beginTransaction();
-			Query query = session.createQuery("UPDATE Country SET country_name=:country_name WHERE country_id=:id ");
-			query.setParameter("country_name", t.getName());
-			query.setParameter("id", id);
-			query.executeUpdate();
-			session.getTransaction().commit();
-			session.close();
-		} catch (Exception e) {
-			throw new DaoSessionException("Błąd w tworzeniu sesji połączenia z bazą danych", e);
-		}
+	public void update(long id, Country t) {
+
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		Query query = session.createQuery("UPDATE Country SET country_name=:country_name WHERE country_id=:id ");
+		query.setParameter("country_name", t.getName());
+		query.setParameter("id", id);
+		query.executeUpdate();
+		session.getTransaction().commit();
+		session.close();
+
+	}
+
+	public List<Country> getCountryWithMoreCurrencies() {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		Query query = session.getNamedQuery("Country_CountryWithMoreThanOneCurrency");
+		List<Country> countries = query.getResultList();
+		return countries;
 
 	}
 
