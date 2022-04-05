@@ -11,6 +11,18 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.NamedNativeQuery;
+import org.hibernate.annotations.NamedQueries;
+import org.hibernate.annotations.NamedQuery;
+
+@NamedQueries({
+		@NamedQuery(name = "Rate_MinRateInPeriod", query = "FROM RateValue r WHERE (r.date BETWEEN :date1 AND :date2 ) AND currency_id = :currency AND r.value =(SELECT MIN(value) FROM RateValue WHERE (date BETWEEN :date1 AND :date2 ) AND currency_id = :currency)"),
+		@NamedQuery(name = "Rate_MaxRateInPeriod", query = "FROM RateValue r WHERE (r.date BETWEEN :date1 AND :date2 ) AND currency_id = :currency AND r.value =(SELECT MAX(value) FROM RateValue WHERE (date BETWEEN :date1 AND :date2 ) AND currency_id = :currency)"),
+		@NamedQuery(name = "Rate_BestFiveRates", query = "FROM RateValue r WHERE currency_id = :currency ORDER BY r.value asc"),
+		@NamedQuery(name = "Rate_WorstFiveRates", query = "FROM RateValue r WHERE currency_id = :currency ORDER BY r.value desc") })
+
+@NamedNativeQuery(name = "Rate_HighestDiffrenceInPeriod", query = "SELECT (max(r.value)- min(r.value)) AS result , c.currency_code FROM rates r JOIN currencies c ON c.currency_id = r.currency_id WHERE r.date BETWEEN :date1 AND :date2 GROUP BY c.currency_code ORDER BY result desc limit 1")
+
 @Entity
 @Table(name = "rates")
 public class RateValue {

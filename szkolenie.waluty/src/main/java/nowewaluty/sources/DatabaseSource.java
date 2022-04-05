@@ -9,6 +9,7 @@ import nowewaluty.exceptions.SaveErrorException;
 import nowewaluty.objects.RateData;
 import nowewaluty.objects.db.CurrencyCode;
 import nowewaluty.objects.db.RateValue;
+import nowewaluty.sources.session.HibernateFactory;
 import nowewaluty.sources.session.dao.CurrencyCodeDao;
 import nowewaluty.sources.session.dao.RateValueDao;
 import nowewaluty.strategies.ParserStrategy;
@@ -18,6 +19,8 @@ public class DatabaseSource implements SourceStrategy {
 
 	private Currency currency;
 	private LocalDate date;
+
+	private HibernateFactory factory = new HibernateFactory();
 
 	public DatabaseSource() {
 	}
@@ -30,7 +33,7 @@ public class DatabaseSource implements SourceStrategy {
 	}
 
 	public RateValue response() throws Exception {
-		RateValueDao rateValueDao = new RateValueDao();
+		RateValueDao rateValueDao = new RateValueDao(factory);
 
 		RateValue result = rateValueDao.get(currency, date);
 
@@ -40,10 +43,9 @@ public class DatabaseSource implements SourceStrategy {
 	@Override
 	public void saveRate(RateData rate) {
 
-		CurrencyCodeDao currencyCodeDao = new CurrencyCodeDao();
-		RateValueDao rateValueDao = new RateValueDao();
-
 		try {
+			CurrencyCodeDao currencyCodeDao = new CurrencyCodeDao(factory);
+			RateValueDao rateValueDao = new RateValueDao(factory);
 			CurrencyCode currencyCode = currencyCodeDao.get(rate.getCurrency());
 
 			if (currencyCode == null) {
