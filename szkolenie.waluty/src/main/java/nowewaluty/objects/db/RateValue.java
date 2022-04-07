@@ -6,9 +6,11 @@ import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.NamedNativeQuery;
@@ -16,8 +18,8 @@ import org.hibernate.annotations.NamedQueries;
 import org.hibernate.annotations.NamedQuery;
 
 @NamedQueries({
-		@NamedQuery(name = "Rate_MinRateInPeriod", query = "FROM RateValue r WHERE (r.date BETWEEN :date1 AND :date2 ) AND currency_id = :currency AND r.value =(SELECT MIN(value) FROM RateValue WHERE (date BETWEEN :date1 AND :date2 ) AND currency_id = :currency)"),
-		@NamedQuery(name = "Rate_MaxRateInPeriod", query = "FROM RateValue r WHERE (r.date BETWEEN :date1 AND :date2 ) AND currency_id = :currency AND r.value =(SELECT MAX(value) FROM RateValue WHERE (date BETWEEN :date1 AND :date2 ) AND currency_id = :currency)"),
+		@NamedQuery(name = "Rate_MinRateInPeriod", query = "FROM RateValue r WHERE currency_id =:currency AND (date BETWEEN :date1 AND :date2) ORDER BY r.value asc"),
+		@NamedQuery(name = "Rate_MaxRateInPeriod", query = "FROM RateValue r WHERE currency_id =:currency AND (date BETWEEN :date1 AND :date2) ORDER BY r.value desc"),
 		@NamedQuery(name = "Rate_BestFiveRates", query = "FROM RateValue r WHERE currency_id = :currency ORDER BY r.value asc"),
 		@NamedQuery(name = "Rate_WorstFiveRates", query = "FROM RateValue r WHERE currency_id = :currency ORDER BY r.value desc") })
 
@@ -28,7 +30,8 @@ import org.hibernate.annotations.NamedQuery;
 public class RateValue {
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "rateValueGenerator")
+	@SequenceGenerator(name = "rateValueGenerator", sequenceName = "rateValueSeq", allocationSize = 100)
 	@Column(name = "rate_id")
 	private Long id;
 

@@ -5,12 +5,14 @@ import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.springframework.stereotype.Component;
 
 import nowewaluty.exceptions.DaoSessionException;
 import nowewaluty.objects.db.Country;
 import nowewaluty.sources.session.HibernateFactory;
 import nowewaluty.strategies.Dao;
 
+@Component
 public class CountryDao implements Dao<Country> {
 
 	SessionFactory sessionFactory;

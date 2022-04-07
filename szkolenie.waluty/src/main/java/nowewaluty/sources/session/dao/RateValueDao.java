@@ -2,27 +2,30 @@ package nowewaluty.sources.session.dao;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.springframework.stereotype.Repository;
 
 import nowewaluty.Currency;
 import nowewaluty.exceptions.DaoSessionException;
 import nowewaluty.objects.RatesSeries;
 import nowewaluty.objects.RatesSeries.Rate;
+import nowewaluty.objects.db.CurrencyCode;
 import nowewaluty.objects.db.RateValue;
 import nowewaluty.parsers.parser.JsonParser;
 import nowewaluty.sources.ApiSource;
 import nowewaluty.sources.session.HibernateFactory;
 import nowewaluty.strategies.Dao;
 
+@Repository
 public class RateValueDao implements Dao<RateValue> {
 
 	SessionFactory sessionFactory;
+
 	HibernateFactory factory;
 
 	public RateValueDao(HibernateFactory factory) throws DaoSessionException {
@@ -76,7 +79,7 @@ public class RateValueDao implements Dao<RateValue> {
 
 	}
 
-	public RateValue get(Currency currency, LocalDate date) throws DaoSessionException {
+	public RateValue get(Currency currency, LocalDate date) {
 
 		CurrencyCodeDao currencyCodeDao = new CurrencyCodeDao(factory);
 
@@ -121,12 +124,14 @@ public class RateValueDao implements Dao<RateValue> {
 		queryMin.setParameter("date1", startDate);
 		queryMin.setParameter("date2", endDate);
 		queryMin.setParameter("currency", codeId);
+		queryMin.setMaxResults(1);
 		rate[0] = (RateValue) queryMin.uniqueResult();
 
 		Query queryMax = session.getNamedQuery("Rate_MaxRateInPeriod");
 		queryMax.setParameter("date1", startDate);
 		queryMax.setParameter("date2", endDate);
 		queryMax.setParameter("currency", codeId);
+		queryMax.setMaxResults(1);
 		rate[1] = (RateValue) queryMax.uniqueResult();
 
 		return rate;
@@ -163,41 +168,49 @@ public class RateValueDao implements Dao<RateValue> {
 		JsonParser parser = new JsonParser();
 
 		CurrencyCodeDao currencyDao = new CurrencyCodeDao(factory);
+		List<CurrencyCode> codes = currencyDao.getAll();
+
+		Session session = sessionFactory.openSession();
 
 		LocalDate date1 = LocalDate.of(2002, 02, 02);
 		LocalDate date2 = LocalDate.of(2003, 02, 02);
-		Set<RateValue> ratesData = new HashSet<>();
-		System.out.println("Pobrano i przekonwertowano: ");
-		for (Currency code : Currency.values()) {
-			for (int i = 0; i < 20; i++) {
-				date1 = date1.plusYears(i);
-				date2 = date2.plusYears(i);
-				RatesSeries series = api.getRates(parser, code, date1, date2);
-				if (series != null) {
-					for (Rate rate : series.getRates()) {
-						ratesData.add(new RateValue(rate.getMid(), rate.getEffectiveDate(), currencyDao.get(code)));
-					}
-				}
-				date1 = LocalDate.of(2002, 02, 02);
-				date2 = LocalDate.of(2003, 02, 02);
-			}
-			System.out.println(ratesData.size());
-		}
 		int counter = 0;
-		System.out.println("Zapisano w bazie: ");
-		for (RateValue rate : ratesData) {
-			this.save(rate);
-			counter++;
-			if (counter % 1000 == 0) {
-				System.out.println(counter);
+		int codeCounter = 0;
+		try {
+			session.getTransaction().begin();
+			for (Currency code : Currency.values()) {
+				for (int i = 0; i < 19; i++) {
+
+					RatesSeries series = api.getRates(parser, code, date1, date2);
+					if (series != null) {
+						date1 = date1.plusYears(i);
+						date2 = date2.plusYears(i);
+						for (Rate rate : series.getRates()) {
+							counter++;
+							session.save(new RateValue(rate.getMid(), rate.getEffectiveDate(), codes.get(codeCounter)));
+							if (counter % 100 == 0) {
+								session.flush();
+								session.clear();
+								session.getTransaction().commit();
+								session.getTransaction().begin();
+							}
+
+						}
+					}
+					date1 = LocalDate.of(2002, 02, 02);
+					date2 = LocalDate.of(2003, 02, 02);
+
+				}
+				codeCounter++;
 			}
+
+		} catch (HibernateException e) {
+			if (session.getTransaction() != null) {
+				session.getTransaction().rollback();
+			}
+		} finally {
+			session.close();
 		}
-	}
-
-	public static void main(String[] args) throws Exception {
-		HibernateFactory factory = new HibernateFactory();
-		RateValueDao dao = new RateValueDao(factory);
-
 	}
 
 }

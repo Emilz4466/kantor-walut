@@ -1,8 +1,11 @@
 package nowewaluty.sources.session.dao;
 
+import java.util.List;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.springframework.stereotype.Component;
 
 import nowewaluty.Currency;
 import nowewaluty.exceptions.DaoSessionException;
@@ -10,6 +13,7 @@ import nowewaluty.objects.db.CurrencyCode;
 import nowewaluty.sources.session.HibernateFactory;
 import nowewaluty.strategies.Dao;
 
+@Component
 public class CurrencyCodeDao implements Dao<CurrencyCode> {
 
 	SessionFactory sessionFactory;
@@ -72,6 +76,15 @@ public class CurrencyCodeDao implements Dao<CurrencyCode> {
 		session.getTransaction().commit();
 		session.close();
 		return currencyCode;
+
+	}
+
+	public List<CurrencyCode> getAll() {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		Query query = session.getNamedQuery("CurrencyCode_AllCodes");
+		List<CurrencyCode> codes = query.getResultList();
+		return codes;
 
 	}
 

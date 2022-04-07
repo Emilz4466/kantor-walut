@@ -1,12 +1,12 @@
 package nowewaluty;
 
 public enum Currency {
-	AUD("aud"), ATS("ats"), BEF("bef"), CZK("czk"), DKK("dkk"), EEK("eek"), FIM("fim"), FRF("frf"), GRD("grd"),
-	ESP("esp"), NLG("nlg"), IEP("iep"), JPY("jpy"), CAD("cad"), LUF("luf"), NOK("nok"), PTE("pte"), EUR("eur"),
-	USD("usd"), CHF("chf"), SEK("sek"), HUF("huf"), GBP("gbp"), ITL("itl"), XDR("xdr"), THB("thb"), HKD("hkd"),
-	NZD("nzd"), SGD("sgd"), UAH("uah"), ISK("isk"), HRK("hrk"), RON("ron"), BGN("bgn"), TRY("try"), ILS("ils"),
-	CLP("clp"), PHP("php"), MXN("mxn"), ZAR("zar"), BRL("brl"), MYR("myr"), RUB("rub"), IDR("idr"), INR("inr"),
-	KRW("krw"), CNY("cny"), LVL("lvl"), CYP("cyp"), SKK("skk"), MTL("mtl"), LTL("ltl"), SIT("sit");
+	ATS("ats"), AUD("aud"), BEF("bef"), BGN("bgn"), BRL("brl"), CAD("cad"), CHF("chf"), CLP("clp"), CNY("cny"),
+	CYP("cyp"), CZK("czk"), DKK("dkk"), EEK("eek"), ESP("esp"), EUR("eur"), FIM("fim"), FRF("frf"), GBP("gbp"),
+	GRD("grd"), HKD("hkd"), HRK("hrk"), HUF("huf"), IDR("idr"), IEP("iep"), ILS("ils"), INR("inr"), ISK("isk"),
+	ITL("itl"), JPY("jpy"), KRW("krw"), LTL("ltl"), LUF("luf"), LVL("lvl"), MTL("mtl"), MXN("mxn"), MYR("myr"),
+	NLG("nlg"), NOK("nok"), NZD("nzd"), PHP("php"), PTE("pte"), RON("ron"), RUB("rub"), SEK("sek"), SGD("sgd"),
+	SIT("sit"), SKK("skk"), THB("thb"), TRY("try"), UAH("uah"), USD("usd"), XDR("xdr"), ZAR("zar");
 
 	public final String code;
 
